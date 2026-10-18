@@ -17,6 +17,7 @@ Get-ChildItem assets\fonts -File | Where-Object {$_.Extension -in @('.txt','.md'
 New-Item -ItemType Directory -Path (Join-Path $packageRoot 'docs') -Force | Out-Null
 Copy-Item -LiteralPath docs\licenses -Destination (Join-Path $packageRoot 'docs') -Recurse -Force
 Copy-Item -LiteralPath docs\dependency-licenses.json,docs\obsidian.png,docs\ivory.png -Destination (Join-Path $packageRoot 'docs') -Force
+Get-ChildItem -LiteralPath $packageRoot -File -Recurse | Where-Object {$_.LastWriteTime.Year -lt 1980} | ForEach-Object {$_.LastWriteTime=[datetime]'2000-01-01'}
 Compress-Archive -LiteralPath $packageRoot -DestinationPath (Join-Path $releaseRoot "$packageName.zip") -Force
 $exeName="MagicCircleMaker-$version-windows-x64.exe"
 Copy-Item -LiteralPath $binary -Destination (Join-Path $releaseRoot $exeName) -Force

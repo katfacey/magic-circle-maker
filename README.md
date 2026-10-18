@@ -2,14 +2,14 @@
 
 A native Rust workbench for generating and editing magic circles, alchemical transmutation designs, geometric seals, and imaginary spells. Start with a repeatable seed, then shape every element by hand.
 
-**[Download the Windows beta](https://github.com/katfacey/magic-circle-maker/releases/tag/v0.1.0-beta.1)** · [Report a bug](https://github.com/katfacey/magic-circle-maker/issues)
+**[Download the Windows beta](https://github.com/katfacey/magic-circle-maker/releases/tag/v0.1.0-beta.2)** · [Report a bug](https://github.com/katfacey/magic-circle-maker/issues)
 
 ![Magic Circle Maker in its default Obsidian theme](docs/obsidian.png)
 
 ## Download and run
 
-1. Open the [beta release](https://github.com/katfacey/magic-circle-maker/releases/tag/v0.1.0-beta.1).
-2. Download **MagicCircleMaker-0.1.0-beta.1-windows-x64.zip** and extract it.
+1. Open the [beta release](https://github.com/katfacey/magic-circle-maker/releases/tag/v0.1.0-beta.2).
+2. Download **MagicCircleMaker-0.1.0-beta.2-windows-x64.zip** and extract it.
 3. Run **MagicCircleMaker.exe**. No Rust installation or separate font installation is needed.
 
 The release also includes a standalone EXE and SHA-256 checksums. The ZIP is the recommended download because it keeps the license notices with the application. This is an unsigned beta for 64-bit Windows 10/11 with a graphics driver supporting OpenGL 3.3. It has been built and smoke-tested on Windows; other operating systems do not have release binaries yet.

@@ -51,19 +51,17 @@ impl Fonts {
             return Err("Font files must be under 12 MB.".into());
         }
         let bytes = std::fs::read(path).map_err(err)?;
+        // Use the same family-name rules as the renderer, including OpenType's
+        // preferred typographic family and collections with multiple faces.
+        let mut probe = fontdb::Database::new();
+        probe.load_font_data(bytes.clone());
+        let name = probe
+            .faces()
+            .next()
+            .and_then(|f| f.families.first())
+            .map(|(name, _)| name.clone())
+            .ok_or("This font has no usable family name.")?;
         self.add_bytes(&bytes)?;
-        let face = ttf_parser::Face::parse(&bytes, 0).map_err(err)?;
-        let name = face
-            .names()
-            .into_iter()
-            .find(|n| n.name_id == ttf_parser::name_id::FAMILY && n.is_unicode())
-            .and_then(|n| n.to_string())
-            .unwrap_or_else(|| {
-                path.file_stem()
-                    .unwrap_or_default()
-                    .to_string_lossy()
-                    .into_owned()
-            });
         Ok(EmbeddedFont {
             name,
             data: B64.encode(bytes),
@@ -614,6 +612,44 @@ pub fn self_test(path: &Path) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn custom_font_uses_typographic_family_after_reopening() {
+        let mut bytes = include_bytes!("../assets/fonts/im-fell-english.ttf").to_vec();
+        let u16_at = |bytes: &[u8], n: usize| u16::from_be_bytes([bytes[n], bytes[n + 1]]) as usize;
+        let u32_at = |bytes: &[u8], n: usize| {
+            u32::from_be_bytes(bytes[n..n + 4].try_into().unwrap()) as usize
+        };
+        let count = u16_at(&bytes, 4);
+        let table = (0..count)
+            .map(|i| 12 + i * 16)
+            .find(|i| &bytes[*i..*i + 4] == b"name")
+            .unwrap();
+        let offset = u32_at(&bytes, table + 8);
+        let names = u16_at(&bytes, offset + 2);
+        // Leave the valid typographic family (name ID 16), omitting legacy ID 1.
+        for i in 0..names {
+            let n = offset + 6 + i * 12 + 6;
+            if u16_at(&bytes, n) == 1 {
+                bytes[n..n + 2].copy_from_slice(&15u16.to_be_bytes());
+            }
+        }
+        let path = std::env::temp_dir().join(format!("mcm-uninstalled-{}.ttf", model::new_id()));
+        std::fs::write(&path, bytes).unwrap();
+        let mut fonts = Fonts::new();
+        let imported = fonts.import(&path).unwrap();
+        let _ = std::fs::remove_file(path);
+        assert_eq!(imported.name, "IM FELL English");
+        let mut doc = Document::default();
+        doc.layers[1].font = imported.name.clone();
+        doc.custom_fonts.push(imported);
+        let reopened: Document =
+            serde_json::from_slice(&serde_json::to_vec(&doc).unwrap()).unwrap();
+        let mut restored = Fonts::new();
+        restored.load_project(&reopened).unwrap();
+        restored.check(&reopened).unwrap();
+        assert!(render(&reopened, None, 256, &restored).is_ok());
+    }
     #[test]
     fn escapes_xml() {
         assert_eq!(esc("<a & \"b\">"), "&lt;a &amp; &quot;b&quot;&gt;")

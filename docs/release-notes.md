@@ -1,8 +1,10 @@
-# Magic Circle Maker 0.1.0-beta.1
+# Magic Circle Maker 0.1.0-beta.2
 
 The first native Rust desktop beta for 64-bit Windows.
 
-Download **MagicCircleMaker-0.1.0-beta.1-windows-x64.zip**, extract it, and run **MagicCircleMaker.exe**. The ZIP includes the application and license notices. A standalone EXE is also attached. No Rust installation is required.
+Beta 2 corrects custom font selection for files that use OpenType typographic family names. A regression test covers importing and reopening those fonts.
+
+Download **MagicCircleMaker-0.1.0-beta.2-windows-x64.zip**, extract it, and run **MagicCircleMaker.exe**. The ZIP includes the application and license notices. A standalone EXE is also attached. No Rust installation is required.
 
 This release includes seeded alchemy/geometry/sigil generation, editable layers, Move/Rotate/Scale controls with canvas gizmos, custom artwork imports, bundled/system/custom fonts, project saving with embedded assets, undo/redo, Obsidian and Ivory themes, and aligned transparent PNG exports for each visible layer. Export sizes are 1024, 2048, and 4096 pixels.
 
