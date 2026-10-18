@@ -1,0 +1,12 @@
+/target/
+/.tooling/
+/release/
+/web-prototype/
+/*.tar.gz
+/*.zip
+/design/
+/qa/
+*.pdb
+*.tmp
+.DS_Store
+

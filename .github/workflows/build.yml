@@ -1,0 +1,34 @@
+name: Windows build
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test
+        run: cargo test --locked
+      - name: Build
+        run: cargo build --release --locked
+      - name: Integration checks
+        shell: pwsh
+        run: |
+          $p=Start-Process target/release/magic-circle-maker.exe -ArgumentList '--self-test qa' -WindowStyle Hidden -PassThru -Wait
+          if($p.ExitCode -ne 0){Get-Content qa/error.txt;exit 1}
+          Get-Content qa/result.json
+      - name: Package
+        shell: pwsh
+        run: ./scripts/package.ps1
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: magic-circle-maker-windows-x64
+          path: |
+            release/*.zip
+            release/*.exe
+            release/SHA256SUMS.txt

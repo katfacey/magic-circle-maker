@@ -1,0 +1,27 @@
+[package]
+name = "magic-circle-maker"
+version = "0.1.0-beta.1"
+edition = "2024"
+rust-version = "1.88"
+description = "A procedural magic-circle workbench with editable layers and transparent PNG exports"
+license = "MIT"
+repository = "https://github.com/katfacey/magic-circle-maker"
+
+[dependencies]
+eframe = { version = "=0.33.0", default-features = false, features = ["glow", "default_fonts"] }
+resvg = "=0.45.1"
+ttf-parser = "0.25"
+rfd = "=0.17.2"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+zip = { version = "=2.4.2", default-features = false, features = ["deflate"] }
+directories = "6"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true
+
